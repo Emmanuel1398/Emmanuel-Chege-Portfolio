@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Emmanuel Chege — Hyperrealistic 3D Artist</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Chakra+Petch:wght@300;400;500&family=Inter:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+:root{
+  --bg:#060606;--bg2:#0b0b0b;--bg3:#111;--surface:#181818;
+  --border:rgba(255,255,255,0.055);--border2:rgba(255,255,255,0.12);
+  --text:#ede8df;--muted:#6b6560;--dim:#2a2724;
+  --gold:#c9a96e;--gold2:#e8d5a8;--gold-lo:rgba(201,169,110,0.08);
+  --serif:'Cormorant Garamond',serif;--ui:'Chakra Petch',sans-serif;--body:'Inter',sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-weight:300;overflow-x:hidden;line-height:1.7}
+::selection{background:var(--gold);color:#000}
+::-webkit-scrollbar{width:2px}::-webkit-scrollbar-thumb{background:var(--gold)}
+
+#cur,#cur-r{position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
+#cur{width:5px;height:5px;background:var(--gold);border-radius:50%}
+#cur-r{width:26px;height:26px;border:1px solid rgba(201,169,110,.3);border-radius:50%;transition:all .16s ease}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;justify-content:space-between;align-items:center;padding:2rem 5vw;transition:padding .4s,background .4s,border-color .4s;border-bottom:1px solid transparent}
+nav.scrolled{padding:1rem 5vw;background:rgba(6,6,6,.95);backdrop-filter:blur(16px);border-bottom-color:var(--border)}
+.logo{font-family:var(--serif);font-size:1.3rem;font-weight:600;letter-spacing:.12em;color:var(--text);text-decoration:none;line-height:1;display:flex;flex-direction:column}
+.logo-sub{font-family:var(--ui);font-size:.4rem;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);margin-top:.22rem}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{font-family:var(--ui);font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--gold)}
+.nav-cta{font-family:var(--ui);font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,169,110,.35);padding:.45rem 1.2rem;text-decoration:none;transition:all .25s}
+.nav-cta:hover{background:var(--gold);color:#000}
+
+#hero{min-height:100vh;display:grid;grid-template-rows:1fr auto;position:relative;overflow:hidden}
+.hero-ambient{position:absolute;inset:0;background:linear-gradient(175deg,#0d0b07 0%,#060606 45%,#08070a 100%)}
+.hero-grid{position:absolute;bottom:0;left:0;right:0;height:42%;background-image:linear-gradient(to right,rgba(201,169,110,.04) 1px,transparent 1px),linear-gradient(to bottom,rgba(201,169,110,.04) 1px,transparent 1px);background-size:55px 55px;transform:perspective(600px) rotateX(55deg);transform-origin:bottom center;mask-image:linear-gradient(to top,rgba(0,0,0,.5),transparent);-webkit-mask-image:linear-gradient(to top,rgba(0,0,0,.5),transparent)}
+.hero-body{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:13vh 5vw 4vh;gap:4vw}
+.eyebrow{font-family:var(--ui);font-size:.53rem;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);margin-bottom:1.8rem;display:flex;align-items:center;gap:.8rem}
+.eyebrow::before{content:'';width:2.2rem;height:1px;background:var(--gold);display:block}
+h1.hn{font-family:var(--serif);font-size:clamp(4rem,7vw,9rem);font-weight:300;line-height:.88;letter-spacing:.01em;margin-bottom:2.2rem}
+h1.hn .l1{display:block;color:var(--text)}
+h1.hn .l2{display:block;font-style:italic;color:var(--gold)}
+.hdiv{width:2.5rem;height:1px;background:var(--border2);margin-bottom:1.6rem}
+.htag{font-family:var(--serif);font-size:1.15rem;font-style:italic;font-weight:300;color:var(--muted);line-height:1.55;max-width:370px;margin-bottom:2.2rem}
+.hacts{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:3rem}
+.btn-g{font-family:var(--ui);font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;background:var(--gold);color:#000;padding:.8rem 1.8rem;text-decoration:none;font-weight:500;transition:background .2s;display:inline-flex;align-items:center;gap:.5rem}
+.btn-g svg{width:10px;fill:#000}.btn-g:hover{background:var(--gold2)}
+.btn-l{font-family:var(--ui);font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;border:1px solid var(--border2);color:var(--muted);padding:.8rem 1.8rem;text-decoration:none;transition:all .2s}
+.btn-l:hover{border-color:var(--gold);color:var(--gold)}
+.hstats{display:flex;gap:2.5rem}
+.sn{font-family:var(--serif);font-size:2.6rem;font-weight:300;color:var(--text);line-height:1}
+.sn em{font-style:normal;color:var(--gold)}
+.sl{font-family:var(--ui);font-size:.43rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:.3rem}
+.hstage{position:relative;display:flex;align-items:center;justify-content:center}
+.sf{width:100%;max-width:500px;aspect-ratio:.74;border:1px solid var(--border);position:relative;overflow:hidden;background:#0a0806}
+.sf::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 35% at 50% 100%,rgba(201,169,110,.09) 0%,transparent 70%),radial-gradient(ellipse 50% 55% at 50% 0%,rgba(201,169,110,.03) 0%,transparent 60%);z-index:1;pointer-events:none}
+.sf img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+.co{position:absolute;width:15px;height:15px;border-color:var(--gold);border-style:solid}
+.co.tl{top:-1px;left:-1px;border-width:1.5px 0 0 1.5px}.co.tr{top:-1px;right:-1px;border-width:1.5px 1.5px 0 0}
+.co.bl{bottom:-1px;left:-1px;border-width:0 0 1.5px 1.5px}.co.br{bottom:-1px;right:-1px;border-width:0 1.5px 1.5px 0}
+.stag{position:absolute;background:rgba(6,6,6,.9);border:1px solid var(--border2);padding:.4rem .85rem;font-family:var(--ui);font-size:.46rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);backdrop-filter:blur(8px);z-index:2;animation:ft 4s ease-in-out infinite}
+.stag.t1{top:20%;right:-18px;animation-delay:0s}.stag.t2{bottom:30%;right:-12px;animation-delay:1.4s}.stag.t3{bottom:20%;left:-12px;animation-delay:.7s}
+.stag strong{color:var(--gold);font-weight:400;font-family:var(--serif);font-style:italic}
+@keyframes ft{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.hbar{position:relative;z-index:2;border-top:1px solid var(--border);display:flex}
+.hbi{flex:1;padding:1.1rem 5vw;border-right:1px solid var(--border);font-family:var(--ui);font-size:.46rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:.7rem}
+.hbi:last-child{border-right:none}
+.hbd{width:4px;height:4px;border-radius:50%;background:var(--gold);flex-shrink:0}
+.scroll-i{position:absolute;bottom:6.5rem;right:5vw;z-index:3;font-family:var(--ui);font-size:.43rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);writing-mode:vertical-rl;display:flex;align-items:center;gap:.6rem}
+.scroll-i::after{content:'';display:block;width:1px;height:2.2rem;background:var(--dim)}
+
+.ticker{overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);height:46px;display:flex;align-items:center;background:var(--bg2)}
+.tt{display:flex;white-space:nowrap;animation:tk 32s linear infinite}
+.tt:hover{animation-play-state:paused}
+.ti{font-family:var(--ui);font-size:.48rem;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);padding:0 2.2rem;border-right:1px solid var(--border);display:flex;align-items:center;height:46px}
+.ti.g{color:var(--gold)}
+@keyframes tk{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+.sec{padding:7rem 5vw}
+.ek{font-family:var(--ui);font-size:.48rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:.7rem;display:flex;align-items:center;gap:.7rem}
+.ek::before{content:'';width:1.8rem;height:1px;background:var(--gold);display:block}
+.et{font-family:var(--serif);font-size:clamp(2.8rem,5vw,5.5rem);font-weight:300;line-height:.92;letter-spacing:.01em;color:var(--text)}
+.et em{font-style:italic;color:var(--gold)}
+.er{border-top:1px solid var(--border);margin-top:1.4rem;padding-top:1.4rem;display:flex;justify-content:space-between;align-items:center}
+.ec2{font-family:var(--ui);font-size:.46rem;letter-spacing:.18em;color:var(--dim)}
+.el{font-family:var(--ui);font-size:.48rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+.el:hover{color:var(--gold)}.el::after{content:' →'}
+.sh{margin-bottom:4rem}
+
+/* CHARACTERS */
+.cg{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;background:var(--border)}
+.cc{position:relative;overflow:hidden;cursor:pointer;background:var(--bg3)}
+.cc::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,6,.95) 0%,rgba(6,6,6,.15) 40%,transparent 65%);opacity:0;transition:opacity .4s;z-index:1}
+.cc:hover::after{opacity:1}
+.cc img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;transition:transform .65s ease}
+.cc:hover img{transform:scale(1.04)}
+.cc.xl{grid-column:span 8;grid-row:span 2}.cc.md{grid-column:span 4}.cc.sm{grid-column:span 4}.cc.wd{grid-column:span 6}
+.cc.xl img{min-height:580px}.cc.md img,.cc.wd img{min-height:260px}.cc.sm img{min-height:220px}
+.ci2{position:absolute;bottom:0;left:0;right:0;z-index:2;padding:2.2rem 1.5rem 1.4rem;transform:translateY(10px);opacity:0;transition:all .4s ease}
+.cc:hover .ci2{transform:none;opacity:1}
+.ct{font-family:var(--serif);font-size:1.6rem;font-weight:300;letter-spacing:.02em}
+.cs{font-family:var(--ui);font-size:.46rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-top:.3rem}
+.cn{position:absolute;top:1rem;left:1.2rem;z-index:3;font-family:var(--ui);font-size:.43rem;letter-spacing:.14em;color:rgba(255,255,255,.25)}
+
+/* STATEMENT */
+.stmt{padding:6.5rem 5vw;display:grid;grid-template-columns:1fr 2px 1fr;gap:5rem;align-items:center;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.sdiv{background:var(--border);align-self:stretch}
+.sq{font-family:var(--serif);font-size:clamp(1.5rem,2.6vw,2.5rem);font-weight:300;font-style:italic;line-height:1.4;color:var(--text)}
+.sq em{color:var(--gold);font-style:normal}
+.sb p{font-size:.9rem;color:var(--muted);line-height:1.95;margin-bottom:1.2rem}
+.sb p:last-child{margin-bottom:0}.sb strong{color:var(--text);font-weight:400}
+
+/* REEL */
+.rsec{padding:7rem 5vw;background:var(--bg);position:relative;overflow:hidden}
+.rbg{position:absolute;right:-3vw;top:50%;transform:translateY(-50%);font-family:var(--serif);font-size:clamp(9rem,18vw,24rem);font-weight:600;color:rgba(255,255,255,.012);pointer-events:none;line-height:1;white-space:nowrap}
+.rl{display:grid;grid-template-columns:1fr 2fr;gap:5rem;align-items:center;position:relative;z-index:1}
+.rc h2{font-family:var(--serif);font-size:clamp(2.3rem,3.8vw,4.2rem);font-weight:300;line-height:1;letter-spacing:.01em;margin-bottom:1.4rem}
+.rc h2 em{font-style:italic;color:var(--gold);display:block}
+.rc p{font-size:.88rem;color:var(--muted);line-height:1.9;margin-bottom:2.2rem}
+.re{position:relative;aspect-ratio:16/9;background:var(--bg3);border:1px solid var(--border);overflow:hidden}
+.re iframe{width:100%;height:100%;border:none;display:none}
+.rph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;cursor:pointer}
+.po{width:70px;height:70px;border:1.5px solid rgba(201,169,110,.55);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.po svg{fill:var(--gold);width:20px;margin-left:4px}
+.rph:hover .po{background:var(--gold);transform:scale(1.1)}.rph:hover .po svg{fill:#000}
+.rpl{font-family:var(--ui);font-size:.5rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+
+/* DISCIPLINE CATS */
+.wcs{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border);border-left:1px solid var(--border)}
+.wc{border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:2.8rem 2rem;cursor:pointer;position:relative;overflow:hidden;transition:background .3s;display:flex;flex-direction:column;justify-content:space-between;min-height:200px}
+.wc::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 80%,var(--gold-lo),transparent 65%);opacity:0;transition:opacity .4s}
+.wc:hover{background:rgba(201,169,110,.03)}.wc:hover::before{opacity:1}
+.wn{font-family:var(--ui);font-size:.43rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+.wi{font-family:var(--serif);font-size:2.8rem;color:rgba(201,169,110,.12);line-height:1;margin-bottom:.5rem;transition:color .3s}
+.wc:hover .wi{color:rgba(201,169,110,.22)}
+.wt{font-family:var(--serif);font-size:1.35rem;font-weight:300;color:var(--text);margin-bottom:.3rem}
+.wd2{font-family:var(--ui);font-size:.42rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+.wa{position:absolute;bottom:1.8rem;right:1.8rem;font-family:var(--ui);font-size:.65rem;color:var(--dim);transition:color .25s,transform .25s}
+.wc:hover .wa{color:var(--gold);transform:translate(3px,-3px)}
+
+/* IMAGE GRIDS */
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;background:var(--border)}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;background:var(--border)}
+.gi{position:relative;overflow:hidden;cursor:pointer;background:var(--bg3);aspect-ratio:16/9}
+.gi.t{aspect-ratio:4/5}.gi.sq{aspect-ratio:1}.gi.w{aspect-ratio:3/2}
+.gi img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .55s ease}
+.gi:hover img{transform:scale(1.05)}
+.go{position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,6,.92) 0%,transparent 55%);display:flex;flex-direction:column;justify-content:flex-end;padding:1.4rem 1.2rem;opacity:0;transition:opacity .35s}
+.gi:hover .go{opacity:1}
+.gtt{font-family:var(--serif);font-size:1.15rem;font-weight:300}
+.gst{font-family:var(--ui);font-size:.44rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-top:.2rem}
+
+/* DRONE */
+.dsec{padding:7rem 5vw;background:var(--bg2)}
+.dl{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start}
+.dcw{aspect-ratio:1.1;border:1px solid var(--border);position:relative;overflow:hidden;background:radial-gradient(ellipse 80% 60% at 50% 50%,#0d0b06,var(--bg) 80%)}
+.dcw canvas{position:absolute;inset:0;width:100%;height:100%}
+.dbg{position:absolute;top:1.2rem;left:1.2rem;z-index:2;font-family:var(--ui);font-size:.44rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,169,110,.3);padding:.28rem .7rem;background:rgba(201,169,110,.06)}
+.dci{border-bottom:1px solid var(--border);padding:1.6rem 0;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:1.3rem;align-items:start;transition:padding .25s}
+.dci:first-child{border-top:1px solid var(--border)}.dci:hover{padding-left:.5rem}
+.dn{font-family:var(--ui);font-size:.46rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);padding-top:.2rem}
+.dtt{font-family:var(--serif);font-size:1.25rem;font-weight:300;margin-bottom:.25rem}
+.dd{font-size:.78rem;color:var(--muted);line-height:1.6}
+.da{font-family:var(--ui);font-size:.75rem;color:var(--dim);transition:color .25s,transform .25s;align-self:center}
+.dci:hover .da{color:var(--gold);transform:translateX(4px)}
+
+/* PROJECTION */
+.pf{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;background:var(--border);margin-top:4rem}
+.pm2{position:relative;overflow:hidden;cursor:pointer;background:var(--bg3);grid-column:span 2;aspect-ratio:16/9}
+.pm2 img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .55s ease}
+.pm2:hover img{transform:scale(1.04)}
+.pmo{position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,6,.88),transparent 55%);display:flex;align-items:flex-end;padding:1.8rem;opacity:0;transition:opacity .35s}
+.pm2:hover .pmo{opacity:1}
+.pa2{display:grid;grid-template-rows:1fr 1fr;gap:3px;background:var(--border)}
+.ps2{position:relative;overflow:hidden;cursor:pointer;background:var(--bg3)}
+.ps2 img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s;min-height:150px}
+.ps2:hover img{transform:scale(1.06)}
+.psl{position:absolute;bottom:.8rem;left:1rem;font-family:var(--serif);font-size:.95rem;font-weight:300;z-index:2;text-shadow:0 1px 8px rgba(0,0,0,.9)}
+.psc{display:block;font-family:var(--ui);font-size:.4rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-top:.15rem}
+
+/* SOCIAL */
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;background:var(--border);margin-top:4rem}
+.si{position:relative;aspect-ratio:1;overflow:hidden;cursor:pointer;background:var(--bg3)}
+.si img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease}
+.si:hover img{transform:scale(1.06)}
+.so{position:absolute;inset:0;background:rgba(6,6,6,.72);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.4rem;opacity:0;transition:opacity .35s}
+.si:hover .so{opacity:1}
+.sp{font-family:var(--ui);font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.st2{font-family:var(--serif);font-size:.95rem;font-weight:300;text-align:center;padding:0 .8rem}
+
+/* PRODUCT */
+.prg{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;background:var(--border);margin-top:4rem}
+.pri{position:relative;overflow:hidden;cursor:pointer;background:var(--bg3);aspect-ratio:4/5}
+.pri img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .55s}
+.pri:hover img{transform:scale(1.05)}
+.pro2{position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,6,.9),transparent 55%);display:flex;flex-direction:column;justify-content:flex-end;padding:1.3rem;opacity:0;transition:opacity .35s}
+.pri:hover .pro2{opacity:1}
+.prt{font-family:var(--serif);font-size:1.15rem;font-weight:300}
+.prs{font-family:var(--ui);font-size:.44rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-top:.2rem}
+
+/* ABOUT */
+.asec{padding:8rem 5vw;background:var(--bg2);border-top:1px solid var(--border)}
+.ala{display:grid;grid-template-columns:340px 1fr;gap:6rem;align-items:start}
+.apor{aspect-ratio:3/4;border:1px solid var(--border);overflow:hidden;position:relative;background:var(--bg3)}
+.apor img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;filter:grayscale(8%)}
+.atag{position:absolute;bottom:1rem;left:1rem;font-family:var(--ui);font-size:.42rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.pdeco{position:absolute;bottom:-1rem;right:-1rem;width:62%;height:62%;border:1px solid rgba(201,169,110,.12);z-index:-1}
+.tg{margin-top:1.8rem;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border)}
+.to{background:var(--bg3);padding:.6rem .85rem;font-family:var(--ui);font-size:.42rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);transition:all .2s;cursor:default}
+.to:hover{background:var(--gold-lo);color:var(--gold)}
+.ae{font-family:var(--ui);font-size:.5rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem}
+.ah{font-family:var(--serif);font-size:clamp(2rem,3.5vw,3.5rem);font-weight:300;line-height:1.05;letter-spacing:.01em;margin-bottom:1.8rem}
+.ah em{font-style:italic;color:var(--gold)}
+.ap3{font-size:.9rem;color:var(--muted);line-height:1.95;margin-bottom:1.2rem}
+.ap3 strong{color:var(--text);font-weight:400}
+.aq{border-left:2px solid var(--gold);padding:.9rem 1.6rem;margin:2.2rem 0;font-family:var(--serif);font-size:1.35rem;font-style:italic;font-weight:300;color:var(--text);line-height:1.45}
+.aspec{margin-top:2.5rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem;border-top:1px solid var(--border);padding-top:1.8rem}
+.an{font-family:var(--serif);font-size:2.3rem;font-weight:300;color:var(--text);line-height:1}
+.an em{font-style:normal;color:var(--gold)}
+.asl{font-family:var(--ui);font-size:.42rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:.28rem}
+
+/* CONTACT */
+.csec{padding:8rem 5vw;background:var(--bg);position:relative;overflow:hidden}
+.cbg{position:absolute;left:-3vw;bottom:-2rem;font-family:var(--serif);font-size:clamp(7rem,16vw,22rem);font-weight:600;color:rgba(255,255,255,.01);pointer-events:none;line-height:1}
+.clout{display:grid;grid-template-columns:1fr 1fr;gap:6rem;position:relative;z-index:1}
+.clout-l h2{font-family:var(--serif);font-size:clamp(2.3rem,4vw,4rem);font-weight:300;line-height:1;letter-spacing:.01em;margin-bottom:1.4rem}
+.clout-l h2 em{font-style:italic;color:var(--gold);display:block}
+.clout-l p{font-size:.88rem;color:var(--muted);line-height:1.9;margin-bottom:2.8rem}
+.clnk{display:flex;flex-direction:column}
+.clnk a{display:grid;grid-template-columns:75px 1fr;align-items:center;padding:1rem 0;border-bottom:1px solid var(--border);text-decoration:none;color:var(--muted);transition:color .2s;font-size:.86rem}
+.clnk a:first-child{border-top:1px solid var(--border)}.clnk a:hover{color:var(--text)}
+.clc{font-family:var(--ui);font-size:.44rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.cform{display:flex;flex-direction:column;gap:1.2rem}
+.lbl{font-family:var(--ui);font-size:.44rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:.4rem}
+.inp,.ta{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.85rem 1rem;font-family:var(--body);font-size:.86rem;font-weight:300;outline:none;transition:border-color .25s;resize:none}
+.inp:focus,.ta:focus{border-color:rgba(201,169,110,.45)}
+.inp::placeholder,.ta::placeholder{color:var(--dim)}
+.ta{min-height:110px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+.fsb{font-family:var(--ui);font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;background:var(--gold);color:#000;border:none;padding:.95rem 1.8rem;cursor:pointer;font-weight:500;transition:background .2s;align-self:flex-start;margin-top:.2rem}
+.fsb:hover{background:var(--gold2)}
+
+footer{border-top:1px solid var(--border);padding:2.5rem 5vw;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:2rem;background:var(--bg)}
+.fl{font-family:var(--serif);font-size:1.1rem;font-weight:600;letter-spacing:.1em;color:var(--muted)}
+.fl em{font-style:normal;color:var(--gold)}
+.fc{font-family:var(--ui);font-size:.42rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);text-align:center}
+.fs{display:flex;gap:1.8rem;justify-content:flex-end}
+.fs a{font-family:var(--ui);font-size:.44rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+.fs a:hover{color:var(--gold)}
+
+.fi{opacity:0;transform:translateY(22px);transition:opacity .75s ease,transform .75s ease}
+.fi.v{opacity:1;transform:none}
+.fi[data-d="1"]{transition-delay:.1s}.fi[data-d="2"]{transition-delay:.22s}.fi[data-d="3"]{transition-delay:.38s}.fi[data-d="4"]{transition-delay:.52s}
+
+@media(max-width:960px){
+  .nav-links{display:none}
+  .hero-body{grid-template-columns:1fr;padding:11vh 5vw 3vh}
+  .hstage{display:none}
+  .stmt{grid-template-columns:1fr;gap:2rem}.sdiv{display:none}
+  .rl,.clout,.ala{grid-template-columns:1fr}
+  .dl{grid-template-columns:1fr}
+  .cg{grid-template-columns:1fr 1fr}
+  .cc.xl,.cc.md,.cc.sm,.cc.wd{grid-column:span 1;grid-row:span 1}
+  .cc.xl img{min-height:260px}
+  .wcs{grid-template-columns:1fr 1fr}
+  .pf{grid-template-columns:1fr}.pm2{grid-column:span 1}
+  .sg,.g4{grid-template-columns:repeat(2,1fr)}
+  .prg,.g3{grid-template-columns:1fr}
+  footer{grid-template-columns:1fr;text-align:center;gap:1.2rem}.fs{justify-content:center}
+  .frow{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div><div id="cur-r"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#hero" class="logo">Emmanuel Chege<span class="logo-sub">Hyperrealistic 3D Artist · Nairobi, Kenya</span></a>
+  <ul class="nav-links">
+    <li><a href="#characters">Characters</a></li>
+    <li><a href="#reel">Reel</a></li>
+    <li><a href="#drone">Drone</a></li>
+    <li><a href="#projection">Projection</a></li>
+    <li><a href="#social">Social</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Hire Me</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-ambient"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-body">
+    <div>
+      <div class="eyebrow fi">Hyperrealistic 3D Character Artist</div>
+      <h1 class="hn fi" data-d="1"><span class="l1">Emmanuel</span><span class="l2">Chege.</span></h1>
+      <div class="hdiv fi" data-d="2"></div>
+      <p class="htag fi" data-d="2">Sculpting hyperrealistic characters, creatures and worlds — where every pore, strand and shadow tells a story.</p>
+      <div class="hacts fi" data-d="3">
+        <a href="#reel" class="btn-g"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Watch Reel</a>
+        <a href="#characters" class="btn-l">View Characters</a>
+      </div>
+      <div class="hstats fi" data-d="4">
+        <div><div class="sn">5<em>+</em></div><div class="sl">Years Experience</div></div>
+        <div><div class="sn">17<em>+</em></div><div class="sl">Characters Created</div></div>
+        <div><div class="sn">7</div><div class="sl">Specialisations</div></div>
+      </div>
+    </div>
+    <div class="hstage fi" data-d="2">
+      <div class="sf">
+        <div class="co tl"></div><div class="co tr"></div><div class="co bl"></div><div class="co br"></div>
+        <img src="https://drive.google.com/uc?export=view&id=1uhJQGJWV8QRu8bcvYs3qdiNde-w_c0Oy" alt="Odungi — The Maasai Fable"/>
+        <div class="stag t1">Poly: <strong>24K+</strong></div>
+        <div class="stag t2">Render: <strong>Unreal 5</strong></div>
+        <div class="stag t3"><strong>ZBrush + Maya</strong></div>
+      </div>
+    </div>
+  </div>
+  <div class="hbar fi">
+    <div class="hbi"><div class="hbd"></div>Nairobi, Kenya</div>
+    <div class="hbi"><div class="hbd"></div>Available Remote &amp; Freelance</div>
+    <div class="hbi"><div class="hbd"></div>Characters · Creatures · Drone · Projection</div>
+    <div class="hbi"><div class="hbd"></div>Maya · ZBrush · Unreal 5 · Houdini</div>
+  </div>
+  <div class="scroll-i">Scroll</div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="tt">
+    <span class="ti g">3D Characters</span><span class="ti">Creature Design</span><span class="ti g">Motion Graphics</span><span class="ti">Product Renders</span><span class="ti g">Drone Show Concepts</span><span class="ti">Event Visualizations</span><span class="ti g">Projection Mapping</span><span class="ti">Social Media Content</span><span class="ti g">Portfolio Reels</span><span class="ti">ZBrush · Maya · Houdini · Unreal · Nuke · Mari</span>
+    <span class="ti g">3D Characters</span><span class="ti">Creature Design</span><span class="ti g">Motion Graphics</span><span class="ti">Product Renders</span><span class="ti g">Drone Show Concepts</span><span class="ti">Event Visualizations</span><span class="ti g">Projection Mapping</span><span class="ti">Social Media Content</span><span class="ti g">Portfolio Reels</span><span class="ti">ZBrush · Maya · Houdini · Unreal · Nuke · Mari</span>
+  </div>
+</div>
+
+<!-- 3D CHARACTERS -->
+<section id="characters" class="sec" style="background:var(--bg)">
+  <div class="sh fi">
+    <div class="ek">Portfolio / 01</div>
+    <h2 class="et">3D Characters<br>&amp; <em>Creatures</em></h2>
+    <div class="er"><span class="ec2">— My primary discipline. 17+ hyperrealistic sculpts from concept to final cinematic render.</span><a href="#contact" class="el">Commission a character</a></div>
+  </div>
+  <div class="cg fi" data-d="2">
+    <!-- XL HERO: Odungi -->
+    <div class="cc xl"><span class="cn">01</span>
+      <img src="https://drive.google.com/uc?export=view&id=1QHUvKzFXAqHdwlHEoQDhsHJjD2xDNQVu" alt="Odungi the Maasai Fable" loading="lazy"/>
+      <div class="ci2"><div class="ct">Odungi — The Maasai Fable</div><div class="cs">Hyperrealistic · ZBrush · Maya · Unreal 5 · 2026</div></div>
+    </div>
+    <!-- Omolara / Wagashiko the Angel -->
+    <div class="cc md"><span class="cn">02</span>
+      <img src="https://drive.google.com/uc?export=view&id=1Ro5J75-KlaowzZf1-97LLJDZCgiAj61O" alt="Wagashiko the Angel" loading="lazy"/>
+      <div class="ci2"><div class="ct">Wagashiko — The Angel</div><div class="cs">Hyperrealistic · Substance Painter · Mari</div></div>
+    </div>
+    <!-- Afrezia -->
+    <div class="cc md"><span class="cn">03</span>
+      <img src="https://drive.google.com/uc?export=view&id=1A3CdSQkLq1gEYtTpIjz0OvamB8oavEBp" alt="Afrezia" loading="lazy"/>
+      <div class="ci2"><div class="ct">Afrezia</div><div class="cs">3D Character · Maya · ZBrush · Mari</div></div>
+    </div>
+    <!-- Shirock NAICCON wide -->
+    <div class="cc wd"><span class="cn">04</span>
+      <img src="https://drive.google.com/uc?export=view&id=1QoARBvmBUPABqFPt5DOJ616notYPjsI2" alt="Shirock NAICCON" loading="lazy"/>
+      <div class="ci2"><div class="ct">Shirock — NAICCON</div><div class="cs">Full-body Hyperrealistic · Blender · Cycles</div></div>
+    </div>
+    <!-- Black Nishati wide -->
+    <div class="cc wd"><span class="cn">05</span>
+      <img src="https://drive.google.com/uc?export=view&id=1tdBL7oHAYhHtli6FcHuePNq2hdcLIMuz" alt="Black Nishati" loading="lazy"/>
+      <div class="ci2"><div class="ct">Black Nishati — NAICCON</div><div class="cs">Character · ZBrush · Nuke Compositing</div></div>
+    </div>
+    <!-- Omollo the Minotaur -->
+    <div class="cc sm"><span class="cn">06</span>
+      <img src="https://drive.google.com/uc?export=view&id=1_3AnDjs0iuulvAqkZXolYBx45wuRMVxw" alt="Omollo the Minotaur" loading="lazy"/>
+      <div class="ci2"><div class="ct">Omollo — The Minotaur</div><div class="cs">Creature · Hyperrealistic Sculpt</div></div>
+    </div>
+    <!-- Kijana Mnono -->
+    <div class="cc sm"><span class="cn">07</span>
+      <img src="https://drive.google.com/uc?export=view&id=1pgnpEje9ZiBaccl0eTRDG5Ifw1DmQXVG" alt="Kijana Mnono" loading="lazy"/>
+      <div class="ci2"><div class="ct">Kijana Mnono</div><div class="cs">Character Study · ZBrush · Maya</div></div>
+    </div>
+    <!-- Cheetah Skull -->
+    <div class="cc sm"><span class="cn">08</span>
+      <img src="https://drive.google.com/uc?export=view&id=1CJ7EMLSVT3l-ALq8pyKeMh9X8SB12Ky0" alt="Cheetah Skull" loading="lazy"/>
+      <div class="ci2"><div class="ct">Cheetah Skull</div><div class="cs">Anatomical Sculpt · ZBrush · Substance</div></div>
+    </div>
+    <!-- Leopard -->
+    <div class="cc sm"><span class="cn">09</span>
+      <img src="https://drive.google.com/uc?export=view&id=1FNEH42gSJ1UwyXQLL-DYENm5pNzWCg7R" alt="Leopard" loading="lazy"/>
+      <div class="ci2"><div class="ct">Leopard</div><div class="cs">Creature · ZBrush · Mari · Hyperrealism</div></div>
+    </div>
+    <!-- Leopard side -->
+    <div class="cc sm"><span class="cn">10</span>
+      <img src="https://drive.google.com/uc?export=view&id=1FZBgvOrPm-JgCzG7dkUAO9P5C9wWNOgW" alt="Leopard Side" loading="lazy"/>
+      <div class="ci2"><div class="ct">Leopard — Profile</div><div class="cs">Creature Detail Study</div></div>
+    </div>
+    <!-- Odungi alt -->
+    <div class="cc sm"><span class="cn">11</span>
+      <img src="https://drive.google.com/uc?export=view&id=1_gF34MBLHG1D385AX-6-T6zDGakkB0Mv" alt="Odungi Alt" loading="lazy"/>
+      <div class="ci2"><div class="ct">Odungi — Alt Render</div><div class="cs">Unreal 5 · Cinematic Lighting</div></div>
+    </div>
+    <!-- Omolara portrait -->
+    <div class="cc sm"><span class="cn">12</span>
+      <img src="https://drive.google.com/uc?export=view&id=1vZme7yIW7VbUOlTw5CtYTV00zFObasrs" alt="Omolara" loading="lazy"/>
+      <div class="ci2"><div class="ct">Omolara</div><div class="cs">Portrait · Hyperrealistic · Mari</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- STATEMENT -->
+<div class="stmt fi">
+  <div class="sq">"I don't just build 3D models —<br>I sculpt <em>living things</em> that make you forget they aren't real."</div>
+  <div class="sdiv"></div>
+  <div class="sb">
+    <p>Based in <strong>Nairobi, Kenya</strong>, Emmanuel Chege is a hyperrealistic 3D artist with over <strong>five years</strong> of professional experience across character design, creature sculpting, motion graphics, drone show concepts, event visualizations, projection mapping and social media content.</p>
+    <p>His practice is rooted in an obsession with surface detail — the way light catches skin, the micro-anatomy of a creature's eye, the weight of fabric. Every project begins and ends with a commitment to <strong>tactile, believable realism</strong>.</p>
+  </div>
+</div>
+
+<!-- SHOWREEL -->
+<div class="rsec" id="reel">
+  <span class="rbg">REEL</span>
+  <div class="rl">
+    <div class="rc fi">
+      <div class="ek">Portfolio / 02</div>
+      <h2><em>Showreel</em><br>2024 / 2025</h2>
+      <p>Five years of hyperrealistic 3D work distilled into a single cinematic sequence — characters, creatures, motion, drone concepts and projection mapping.</p>
+      <a href="#contact" class="btn-g"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Commission Work</a>
+    </div>
+    <div class="re fi" data-d="2">
+      <div class="co tl"></div><div class="co tr"></div><div class="co bl"></div><div class="co br"></div>
+      <div class="rph" id="rph" onclick="loadReel()">
+        <div class="po"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        <span class="rpl">Play Showreel 2024 / 2025</span>
+      </div>
+      <iframe id="rif" src="" allowfullscreen allow="autoplay;encrypted-media"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- DISCIPLINES -->
+<section id="work" style="padding:7rem 5vw;background:var(--bg2)">
+  <div class="sh fi">
+    <div class="ek">Portfolio / 03–08</div>
+    <h2 class="et">All <em>Disciplines</em></h2>
+    <div class="er"><span class="ec2">— Seven specialisations. One unified vision.</span></div>
+  </div>
+  <div class="wcs fi" data-d="2">
+    <div class="wc"><div class="wn">03 / Motion Graphics</div><div><div class="wi">▶</div><div class="wt">Motion Graphics</div><div class="wd2">After Effects · DaVinci · Premiere</div></div><div class="wa">↗</div></div>
+    <div class="wc"><div class="wn">04 / Visualization</div><div><div class="wi">◉</div><div class="wt">Event Visualizations</div><div class="wd2">Architectural · Unreal · Twinmotion</div></div><div class="wa">↗</div></div>
+    <div class="wc"><div class="wn">05 / Product</div><div><div class="wi">◆</div><div class="wt">Product Renders</div><div class="wd2">Maya · Blender · Substance</div></div><div class="wa">↗</div></div>
+    <div class="wc"><div class="wn">06 / Drone Shows</div><div><div class="wi">✦</div><div class="wt">Drone Show Concepts</div><div class="wd2">Aerial Formation · Light Choreography</div></div><div class="wa">↗</div></div>
+    <div class="wc"><div class="wn">07 / Projection</div><div><div class="wi">⬡</div><div class="wt">Projection Mapping</div><div class="wd2">Architectural · Event · KICC Nairobi</div></div><div class="wa">↗</div></div>
+    <div class="wc"><div class="wn">08 / Social</div><div><div class="wi">◈</div><div class="wt">Social Media Content</div><div class="wd2">Branded · 3D Motion · Campaign</div></div><div class="wa">↗</div></div>
+  </div>
+</section>
+
+<!-- EVENT VISUALIZATIONS -->
+<section id="viz" class="sec" style="background:var(--bg)">
+  <div class="sh fi">
+    <div class="ek">Portfolio / 04</div>
+    <h2 class="et">Event <em>Visualizations</em></h2>
+    <div class="er"><span class="ec2">— Nyayo Stadium, Martell XXO, Concert setups, VVIP Lounges.</span></div>
+  </div>
+  <div class="g3 fi" data-d="2">
+    <div class="gi w"><img src="https://drive.google.com/uc?export=view&id=155AX5DV-DojEX9WN1Ro1h15fgKNx1tpH" alt="Nyayo 2nd Floor" loading="lazy"/><div class="go"><div class="gtt">Nyayo Stadium — 2nd Floor Lounge</div><div class="gst">Asake Concert · Tukutane Ent.</div></div></div>
+    <div class="gi w"><img src="https://drive.google.com/uc?export=view&id=1VTDvzNWKN15INIQwOf0OyvFHusRahhhZ" alt="Nyayo 1st Floor" loading="lazy"/><div class="go"><div class="gtt">Nyayo Stadium — 1st Floor Lounge</div><div class="gst">Event Visualization · Unreal Engine</div></div></div>
+    <div class="gi w"><img src="https://drive.google.com/uc?export=view&id=17bAcI0GVciFueLwMgJxmoie1osIHaIYv" alt="Martell Setup" loading="lazy"/><div class="go"><div class="gtt">Martell XXO — JW Marriott Launch</div><div class="gst">Luxury Brand Event · Concept Render</div></div></div>
+    <div class="gi w"><img src="https://drive.google.com/uc?export=view&id=1PUZ8C28liwyqbXMImKWLadr3qS9e5P-k" alt="A-Tent Side" loading="lazy"/><div class="go"><div class="gtt">A-Tent Side View — Concert Setup</div><div class="gst">Architectural Visualization</div></div></div>
+    <div class="gi w"><img src="https://drive.google.com/uc?export=view&id=1Ih2pcCcNRgSAW6EDt07CZOkxhROIWApv" alt="VVIP Lounge" loading="lazy"/><div class="go"><div class="gtt">VVIP Lounge — Pitch View</div><div class="gst">Event Design · Twinmotion</div></div></div>
+    <div class="gi w"><img src="https://drive.google.com/uc?export=view&id=1D8i5UbJJbLWaSUxuI6hHqxbTiPpMeZ7b" alt="Character Viz" loading="lazy"/><div class="go"><div class="gtt">Character Visualization Study</div><div class="gst">Half-body · Cinematic Render</div></div></div>
+  </div>
+</section>
+
+<!-- PRODUCT RENDERS -->
+<section id="products" class="sec" style="background:var(--bg2)">
+  <div class="sh fi">
+    <div class="ek">Portfolio / 05</div>
+    <h2 class="et">Product <em>Renders</em></h2>
+    <div class="er"><span class="ec2">— Photorealistic product visualisation. Perfume, consumer goods, branded 3D.</span></div>
+  </div>
+  <div class="prg fi" data-d="2">
+    <div class="pri"><img src="https://drive.google.com/uc?export=view&id=144OXBT0eSn9kvs8DG1eRpw-olQ_xnrQv" alt="Michael's Bouquet" loading="lazy"/><div class="pro2"><div class="prt">Michael's Bouquet</div><div class="prs">Perfume Bottle · Maya · Substance</div></div></div>
+    <div class="pri"><img src="https://drive.google.com/uc?export=view&id=1nvn6gfgKKsX1JLNZtlqjBTmB95b0Z7NM" alt="Michael's Bouquet Alt" loading="lazy"/><div class="pro2"><div class="prt">Michael's Bouquet — Alt</div><div class="prs">Photorealistic · 3D Render</div></div></div>
+    <div class="pri"><img src="https://drive.google.com/uc?export=view&id=16I84IkLhQ60WBtATe956nCGQNWQIQxEO" alt="Product 3" loading="lazy"/><div class="pro2"><div class="prt">Product Study</div><div class="prs">3D Product · Blender · HDRI</div></div></div>
+    <div class="pri"><img src="https://drive.google.com/uc?export=view&id=1tDCfd35NppTaEg5X9yGB6pVQOrNxUn5W" alt="Product Hero" loading="lazy"/><div class="pro2"><div class="prt">Hero Shot</div><div class="prs">Studio Lighting · Arnold</div></div></div>
+    <div class="pri"><img src="https://drive.google.com/uc?export=view&id=1Z7HWHF91cld7AzVFW6MShKD4JnrYDM7h" alt="Product Side" loading="lazy"/><div class="pro2"><div class="prt">Side Angle</div><div class="prs">Photorealistic · Maya</div></div></div>
+    <div class="pri" style="display:flex;align-items:center;justify-content:center;background:var(--surface)"><div style="font-family:var(--serif);font-size:1.5rem;color:rgba(201,169,110,.12);text-align:center;padding:1.5rem;line-height:1.6">More<br><em style="color:var(--gold)">Coming Soon</em></div></div>
+  </div>
+</section>
+
+<!-- DRONE SHOWS -->
+<section id="drone" class="dsec">
+  <div class="sh fi">
+    <div class="ek">Portfolio / 06</div>
+    <h2 class="et">Drone Show <em>Concepts</em></h2>
+    <div class="er"><span class="ec2">— EU-Kenya · HFCK · NRP Campaign · Museveni Swearing-in · Mashariki Conference · La Mada</span></div>
+  </div>
+  <div class="dl fi" data-d="1">
+    <div class="dcw">
+      <canvas id="dc"></canvas>
+      <div class="dbg">Live Formation Preview</div>
+      <div class="co tl"></div><div class="co tr"></div><div class="co bl"></div><div class="co br"></div>
+    </div>
+    <div>
+      <div class="dci"><div class="dn">01</div><div><div class="dtt">EU-Kenya Diplomatic Show</div><div class="dd">Aerial formation choreography for the EU-Kenya bilateral summit — flag formations, national symbols and synchronized light sequences.</div></div><div class="da">→</div></div>
+      <div class="dci"><div class="dn">02</div><div><div class="dtt">HFCK Formation Show</div><div class="dd">Housing Finance Corporation of Kenya branded aerial show — logo animation, financial motifs and cinematic finale choreography.</div></div><div class="da">→</div></div>
+      <div class="dci"><div class="dn">03</div><div><div class="dtt">NRP Campaign Drone Show</div><div class="dd">National political campaign aerial concept — bold formation messaging, crowd engagement and broadcast-optimised drone choreography.</div></div><div class="da">→</div></div>
+      <div class="dci"><div class="dn">04</div><div><div class="dtt">Museveni Swearing-in Ceremony</div><div class="dd">State ceremonial drone show — patriotic formations, national colours and timed pyrotechnic integration design.</div></div><div class="da">→</div></div>
+      <div class="dci"><div class="dn">05</div><div><div class="dtt">Mashariki Cooperation Conference</div><div class="dd">Multi-nation aerial choreography for the East African cooperation summit — diplomatic symbolism meets cinematic sky narrative.</div></div><div class="da">→</div></div>
+      <div class="dci"><div class="dn">06</div><div><div class="dtt">La Mada Premium Event</div><div class="dd">Premium hospitality aerial concept — cultural motifs, sky-level brand storytelling and audience-synchronised light moments.</div></div><div class="da">→</div></div>
+    </div>
+  </div>
+  <div class="g3 fi" data-d="2" style="margin-top:3px">
+    <div class="gi"><img src="https://drive.google.com/uc?export=view&id=1WiLRSAwMipmTYFHzatl3QlPMCyl_xH2_" alt="EU-Kenya Drone" loading="lazy"/><div class="go"><div class="gtt">EU-Kenya Show</div><div class="gst">Drone Concept · Formation Design</div></div></div>
+    <div class="gi"><img src="https://drive.google.com/uc?export=view&id=1U76eEBtdccxqpxx0mcdU66YgghfDN1Ds" alt="Formation 2" loading="lazy"/><div class="go"><div class="gtt">Aerial Formation</div><div class="gst">Light Choreography</div></div></div>
+    <div class="gi"><img src="https://drive.google.com/uc?export=view&id=1H2ct1u3SQCW4e_ljbtkd3DiMVXd2z26j" alt="Sky Canvas" loading="lazy"/><div class="go"><div class="gtt">Sky Canvas</div><div class="gst">Drone Light Show</div></div></div>
+  </div>
+</section>
+
+<!-- PROJECTION MAPPING -->
+<section id="projection" class="sec" style="background:var(--bg)">
+  <div class="sh fi">
+    <div class="ek">Portfolio / 07</div>
+    <h2 class="et">Projection <em>Mapping</em></h2>
+    <div class="er"><span class="ec2">— KICC Building · State House · Mashariki Conference · Makini Rebrand · STAROOT Gemini · JAYS Pyrotechnics</span></div>
+  </div>
+  <div class="pf fi" data-d="2">
+    <div class="pm2">
+      <img src="https://drive.google.com/uc?export=view&id=1eCnP6DHx5yS7aVhCXXfFnp1pRy6Ovths" alt="KICC Projection" loading="lazy"/>
+      <div class="pmo"><div><div style="font-family:var(--serif);font-size:1.7rem;font-weight:300">KICC Building Projection</div><div style="font-family:var(--ui);font-size:.44rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-top:.25rem">Architectural Mapping · Coca-Cola Christmas 2025</div></div></div>
+    </div>
+    <div class="pa2">
+      <div class="ps2"><img src="https://drive.google.com/uc?export=view&id=1wDODMg0uLnoYy8SZvMG99cKDMBGDVq4E" alt="State House" loading="lazy"/><div class="psl">State House Projection<span class="psc">Screen Content · Real-time</span></div></div>
+      <div class="ps2"><img src="https://drive.google.com/uc?export=view&id=1ZeTFnlAymZ6j1VRBUv9UwKGrFo9u_31n" alt="Mashariki" loading="lazy"/><div class="psl">Mashariki Conference<span class="psc">Event Projection · Motion</span></div></div>
+    </div>
+  </div>
+  <div class="g3 fi" data-d="3" style="margin-top:3px">
+    <div class="gi"><img src="https://drive.google.com/uc?export=view&id=1UDSaK29Q55VmKMty-2CKmn45PvsHG9dR" alt="Makini Rebrand" loading="lazy"/><div class="go"><div class="gtt">Makini School Rebrand</div><div class="gst">Hologram & Screen Content</div></div></div>
+    <div class="gi"><img src="https://drive.google.com/uc?export=view&id=1psKY4JYRv4ryB_22vFh6BSnNeNXO-RIY" alt="JAYS Pyrotechnics" loading="lazy"/><div class="go"><div class="gtt">JAYS Pyrotechnics LED Screen</div><div class="gst">LED Screen Content · Event</div></div></div>
+    <div class="gi"><img src="https://drive.google.com/uc?export=view&id=1kZrq-9y-ZEZVztvQhGO4j1MeovqVQASY" alt="STAROOT Gemini" loading="lazy"/><div class="go"><div class="gtt">STAROOT Gemini</div><div class="gst">Screen Projection Content</div></div></div>
+  </div>
+</section>
+
+<!-- SOCIAL MEDIA CONTENT -->
+<section id="social" class="sec" style="background:var(--bg2)">
+  <div class="sh fi">
+    <div class="ek">Portfolio / 08</div>
+    <h2 class="et">Social Media <em>Content</em></h2>
+    <div class="er"><span class="ec2">— Branded 3D motion content, campaign graphics and social-first visual storytelling.</span><a href="https://www.instagram.com/arte_artorius/" target="_blank" class="el">Follow @arte_artorius</a></div>
+  </div>
+  <div class="sg fi" data-d="2">
+    <div class="si"><img src="https://drive.google.com/uc?export=view&id=1vZme7yIW7VbUOlTw5CtYTV00zFObasrs" alt="Social 1" loading="lazy"/><div class="so"><div class="sp">Instagram / Behance</div><div class="st2">Omolara — Character Reveal</div></div></div>
+    <div class="si"><img src="https://drive.google.com/uc?export=view&id=1wtZycuPS8AxSI4SkADLhXE_jvqrEMg76" alt="Social 2" loading="lazy"/><div class="so"><div class="sp">ArtStation</div><div class="st2">Wagashiko — WIP Breakdown</div></div></div>
+    <div class="si"><img src="https://drive.google.com/uc?export=view&id=180KB7cywYBD72MaKdGHBOmyGiFnsUfh2" alt="Social 3" loading="lazy"/><div class="so"><div class="sp">Instagram</div><div class="st2">Drone Show Campaign Post</div></div></div>
+    <div class="si"><img src="https://drive.google.com/uc?export=view&id=15NJ64I0RcTPgSvrTKG5JU-VAqvvDLf9t" alt="Social 4" loading="lazy"/><div class="so"><div class="sp">ArtStation</div><div class="st2">Odungi — Final Render Post</div></div></div>
+    <div class="si"><img src="https://drive.google.com/uc?export=view&id=1VPi-P7soptXfZ7xbi1AiEXWCGC3F0OPj" alt="Social 5" loading="lazy"/><div class="so"><div class="sp">Behance</div><div class="st2">Character Process Documentation</div></div></div>
+    <div class="si"><img src="https://drive.google.com/uc?export=view&id=1FRA_MRfEsMt3y62LdI2jawXukxJkEjEm" alt="Social 6" loading="lazy"/><div class="so"><div class="sp">Instagram</div><div class="st2">Leopard — Creature Feature</div></div></div>
+    <div class="si"><img src="https://drive.google.com/uc?export=view&id=144OXBT0eSn9kvs8DG1eRpw-olQ_xnrQv" alt="Social 7" loading="lazy"/><div class="so"><div class="sp">LinkedIn</div><div class="st2">Michael's Bouquet Launch</div></div></div>
+    <div class="si"><img src="https://drive.google.com/uc?export=view&id=1_3AnDjs0iuulvAqkZXolYBx45wuRMVxw" alt="Social 8" loading="lazy"/><div class="so"><div class="sp">Instagram</div><div class="st2">Omollo — Creature Reveal</div></div></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="asec">
+  <div class="ala">
+    <div style="position:relative" class="fi">
+      <div class="apor">
+        <img src="me_comped_3.jpg" alt="Emmanuel Chege — 3D Artist, Nairobi Kenya"/>
+        <div class="atag">Emmanuel Chege · Nairobi, Kenya</div>
+      </div>
+      <div class="pdeco"></div>
+      <div class="tg">
+        <div class="to">Maya</div><div class="to">ZBrush</div>
+        <div class="to">Nuke</div><div class="to">Mari</div>
+        <div class="to">Substance</div><div class="to">Marvelous</div>
+        <div class="to">Unreal 5</div><div class="to">Twinmotion</div>
+        <div class="to">Houdini</div><div class="to">Blender</div>
+        <div class="to">Embergen</div><div class="to">Liquigen</div>
+        <div class="to">After Effects</div><div class="to">DaVinci</div>
+        <div class="to">Premiere Pro</div><div class="to">Illustrator</div>
+      </div>
+    </div>
+    <div class="fi" data-d="2">
+      <div class="ae">Portfolio / 00 — About</div>
+      <h2 class="ah">An obsession with<br><em>hyperrealistic detail.</em></h2>
+      <p class="ap3">I am <strong>Emmanuel Chege</strong>, a hyperrealistic 3D artist and motion designer based in <strong>Nairobi, Kenya</strong> with over five years of professional experience. My core discipline is character and creature design — sculpting digital beings so convincing that the line between render and photograph disappears.</p>
+      <p class="ap3">My practice spans the full 3D pipeline: from concept sculpting in ZBrush, texturing in Mari and Substance Painter, cloth simulation in Marvelous Designer, real-time rendering in Unreal Engine 5, to final compositing in Nuke. Characters like <strong>Odungi the Maasai Fable</strong>, <strong>Wagashiko the Angel</strong>, <strong>Omollo the Minotaur</strong> and <strong>the Leopard</strong> demonstrate a commitment to cultural storytelling through hyperrealistic form.</p>
+      <blockquote class="aq">"Detail is not decoration. It is the difference between something that looks 3D and something that feels alive."</blockquote>
+      <p class="ap3">Beyond characters, I produce drone show concepts for clients including <strong>HFCK, EU-Kenya and NRP</strong>, and projection mapping for landmark venues including <strong>KICC Nairobi</strong>. Available globally for remote freelance, agency collaborations and full-time remote roles.</p>
+      <div class="aspec">
+        <div><div class="an">5<em>+</em></div><div class="asl">Years Experience</div></div>
+        <div><div class="an">17<em>+</em></div><div class="asl">Characters Created</div></div>
+        <div><div class="an">16</div><div class="asl">Tools Mastered</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="csec">
+  <span class="cbg">CONTACT</span>
+  <div class="clout">
+    <div class="fi">
+      <div class="ek">Let's Work Together</div>
+      <h2><em>Start a project</em><br>or say hello.</h2>
+      <p>Open to freelance commissions, creative collaborations and remote full-time roles. Characters, drone shows, projection mapping, motion graphics — I'd love to hear from you.</p>
+      <div class="clnk">
+        <a href="mailto:emmanuelchege777@gmail.com"><span class="clc">Email</span>emmanuelchege777@gmail.com</a>
+        <a href="https://www.artstation.com/emmanuel_chege" target="_blank"><span class="clc">ArtStation</span>artstation.com/emmanuel_chege</a>
+        <a href="https://www.linkedin.com/in/emmanuelchegekamau" target="_blank"><span class="clc">LinkedIn</span>linkedin.com/in/emmanuelchegekamau</a>
+        <a href="https://www.instagram.com/arte_artorius/" target="_blank"><span class="clc">Instagram</span>@arte_artorius</a>
+      </div>
+    </div>
+    <div class="cform fi" data-d="2">
+      <div class="frow">
+        <div><label class="lbl">Name</label><input class="inp" type="text" placeholder="Your name"></div>
+        <div><label class="lbl">Email</label><input class="inp" type="email" placeholder="your@email.com"></div>
+      </div>
+      <div><label class="lbl">Project Type</label><input class="inp" type="text" placeholder="Character · Drone show · Projection · Motion…"></div>
+      <div><label class="lbl">Message</label><textarea class="ta" placeholder="Tell me about your project, timeline and budget…"></textarea></div>
+      <button class="fsb">Send Message →</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="fl">Emmanuel <em>Chege</em></div>
+  <div class="fc">© 2025 Emmanuel Chege · Nairobi, Kenya · All rights reserved</div>
+  <div class="fs">
+    <a href="https://www.instagram.com/arte_artorius/" target="_blank">Instagram</a>
+    <a href="https://www.artstation.com/emmanuel_chege" target="_blank">ArtStation</a>
+    <a href="https://www.linkedin.com/in/emmanuelchegekamau" target="_blank">LinkedIn</a>
+    <a href="https://youtu.be/gmiQ0bNoPgQ" target="_blank">YouTube</a>
+  </div>
+</footer>
+
+<script>
+const cur=document.getElementById('cur'),curR=document.getElementById('cur-r');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+(function a(){rx+=(mx-rx)*.13;ry+=(my-ry)*.13;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(a)})();
+document.querySelectorAll('a,button,.cc,.wc,.dci,.gi,.pm2,.ps2,.si,.pri').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{curR.style.transform='translate(-50%,-50%) scale(1.8)';curR.style.borderColor='rgba(201,169,110,.55)'});
+  el.addEventListener('mouseleave',()=>{curR.style.transform='translate(-50%,-50%) scale(1)';curR.style.borderColor='rgba(201,169,110,.3)'});
+});
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>50),{passive:true});
+const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');io.unobserve(e.target)}})},{threshold:.08});
+document.querySelectorAll('.fi').forEach(el=>io.observe(el));
+document.querySelectorAll('#hero .fi').forEach(el=>el.classList.add('v'));
+function loadReel(){
+  const f=document.getElementById('rif'),p=document.getElementById('rph');
+  f.src='https://www.youtube.com/embed/gmiQ0bNoPgQ?autoplay=1&rel=0';
+  f.style.display='block';p.style.display='none';
+}
+(function(){
+  const cv=document.getElementById('dc');if(!cv)return;
+  const cx=cv.getContext('2d');let W,H,pts=[];
+  const G='rgba(201,169,110,';
+  function resize(){W=cv.width=cv.offsetWidth;H=cv.height=cv.offsetHeight}
+  function init(){pts=[];for(let i=0;i<60;i++)pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.4+.4,p:Math.random()*Math.PI*2,ps:Math.random()*.02+.007})}
+  function draw(){
+    cx.clearRect(0,0,W,H);
+    for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<105){cx.beginPath();cx.strokeStyle=G+((.85-d/105)*.16)+')';cx.lineWidth=.4;cx.moveTo(pts[i].x,pts[i].y);cx.lineTo(pts[j].x,pts[j].y);cx.stroke()}}
+    pts.forEach(p=>{p.p+=p.ps;const g=.5+Math.sin(p.p)*.5;cx.beginPath();cx.arc(p.x,p.y,p.r*(1+g*.4),0,Math.PI*2);cx.fillStyle=G+(g*.8)+')';cx.fill();p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1});
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',()=>{resize();init()});
+  resize();init();draw();
+})();
+</script>
+</body>
+</html>
